@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- 
+=======================================================================
+PROTOTYPE: E-Services Security Enhancement
+DEVELOPER: Theo Masoko
+CLIENT: Mmoloki Modise (Botho University - Network Security BSc)
+STUDENT NO: SFT1512797
+PURPOSE: Academic research prototype - "Using Cybercrime Investigation Methods 
+         and Two-Factor Authentication to Strengthen E-Services Platform Security"
+COPYRIGHT: © 2025 Theo Masoko. All rights reserved.
+NOTES: This is a non-production prototype for academic demonstration only
+=======================================================================
+-->
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Tax Portal | Government E-Services</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+        }
+        
+        .auth-container {
+            max-width: 500px;
+            margin: 80px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        .dashboard-container {
+            display: none;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: white;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        .form-section {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+        
+        .active-section {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-message {
+            color: var(--danger-color);
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .success-message {
+            color: var(--success-color);
+            margin-top: 10px;
+        }
+        
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            background-color: var(--light-color);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .security-badge i {
+            margin-right: 5px;
+            color: var(--success-color);
+        }
+        
+        .file-upload-box {
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-box:hover {
+            border-color: var(--secondary-color);
+            background: rgba(52, 152, 219, 0.05);
+        }
+        
+        .file-upload-box i {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        
+        .sidebar {
+            background: var(--primary-color);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding-top: 20px;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 5px;
+            border-radius: 5px;
+            padding: 10px 15px;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            font-weight: 600;
+        }
+        
+        .welcome-card {
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+            color: white;
+        }
+        
+        .welcome-card .card-body {
+            padding: 30px;
+        }
+        
+        .footer {
+            background: white;
+            padding: 20px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="container auth-container" id="loginPage">
+        <div class="text-center mb-4">
+            <a href="index.html" >
+                <img src="images/logo.png" alt="Secure E-Services Logo" class="mb-3" style="cursor: pointer;">
+            </a>
+            <p class="text-muted">Secure platform for government services</p>
+        </div>
+        
+        <div class="security-badge">
+            <i class="fas fa-lock"></i>
+            <span>Official Government System</span>
+        </div>
+        
+        <form id="loginForm">
+
+            <div class="mb">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter username" />
+              </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Enter Your Password</label>
+                <div class="position-relative">
+                    <input type="password" class="form-control" id="password" required>
+                    <span class="password-toggle" id="togglePassword">
+                        <i class="far fa-eye"></i>
+                    </span>
+                </div>
+                
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2">
+                <i class="fas fa-sign-in-alt me-2"></i> Login Securely
+            </button>
+            <div id="loginError" class="error-message text-center mt-3"></div>
+        </form>
+        
+        <div class="text-center mt-4">
+            <p class="small text-muted">
+                <i class="fas fa-info-circle"></i> Forgot your password? <a href="#" class="text-primary">Reset via secure email</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div class="dashboard-container" id="dashboardPage">
+        <!-- Sidebar -->
+        <div class="sidebar col-md-3 col-lg-2 d-md-block">
+            <div class="text-center mb-4">
+                <img src="images/logo.png" alt="Logo" class="rounded-circle mb-2" style="width: 60px;">
+                <h5 class="text-white">Tax Services</h5>
+                <p class="small text-white-50">Welcome back, <span id="usernameDisplay">User</span></p>
+            </div>
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-file-alt"></i> My Returns
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-history"></i> Filing History
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cog"></i> Account Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+                <h1 class="h2">Tax Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-question-circle"></i> Help
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card welcome-card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h3><i class="fas fa-shield-alt me-2"></i> Secure Tax Portal</h3>
+                                    <p>You're securely logged in to the government tax e-services system. Current tax season: 2023-2024.</p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="security-badge bg-white text-dark">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        <span>Secure Connection Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Card -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Tax Filing Services</h5>
+                            <span class="badge bg-primary">Current Season</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-success btn-lg py-3" id="startReturnBtn">
+                                    <i class="fas fa-file-import me-2"></i> Start New Tax Return
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form Sections -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <!-- Return Form Section -->
+                    <div class="form-section card" id="returnFormSection">
+                        <div class="card-header">
+                            <h5 class="mb-0">Tax Return Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="taxReturnForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="income" class="form-label">Annual Income</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" id="income" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="deductions" class="form-label">Deductions</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" id="deductions" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label for="filingType" class="form-label">Filing Type</label>
+                                        <select class="form-select" id="filingType" required>
+                                            <option value="">Select filing type</option>
+                                            <option value="individual">Individual</option>
+                                            <option value="joint">Married Filing Jointly</option>
+                                            <option value="separate">Married Filing Separately</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="taxYear" class="form-label">Tax Year</label>
+                                        <select class="form-select" id="taxYear" required>
+                                            <option value="2023">2023 (Current)</option>
+                                            <option value="2022">2022</option>
+                                            <option value="2021">2021</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary" id="cancelReturnBtn">
+                                        <i class="fas fa-times me-2"></i> Cancel
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="nextToUploadBtn">
+                                        Continue to Document Upload <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Section -->
+                    <div class="form-section card" id="uploadSection">
+                        <div class="card-header">
+                            <h5 class="mb-0">Supporting Documentation</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="uploadForm">
+                                <div class="security-badge">
+                                    <i class="fas fa-lock"></i>
+                                    <span>All documents are encrypted during transfer</span>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Required Tax Documents</label>
+                                    <div class="file-upload-box" id="taxDocsUploadBox">
+                                        <i class="fas fa-file-pdf"></i>
+                                        <h5>W-2, 1099, or other tax forms</h5>
+                                        <p class="text-muted">Click to browse or drag and drop PDF files</p>
+                                        <input type="file" class="d-none" id="taxDocs" accept=".pdf" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Additional Supporting Documents (Optional)</label>
+                                    <div class="file-upload-box" id="supportDocsUploadBox">
+                                        <i class="fas fa-file-archive"></i>
+                                        <h5>Receipts, statements, or other evidence</h5>
+                                        <p class="text-muted">Click to browse or drag and drop multiple files</p>
+                                        <input type="file" class="d-none" id="supportDocs" multiple>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary" id="backToFormBtn">
+                                        <i class="fas fa-arrow-left me-2"></i> Back to Form
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-paper-plane me-2"></i> Submit Tax Return
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Confirmation Section -->
+                    <div class="form-section card" id="confirmationSection">
+                        <div class="card-header">
+                            <h5 class="mb-0">Submission Complete</h5>
+                        </div>
+                        <div class="card-body text-center py-5">
+                            <div class="mb-4">
+                                <div class="success-icon-circle mb-3">
+                                    <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success-color);"></i>
+                                </div>
+                                <h3 class="mb-3">Tax Return Successfully Submitted</h3>
+                                <p class="text-muted mb-4">
+                                    Your 2023 tax return has been received and is being processed.<br>
+                                    A confirmation has been sent to your registered email address.
+                                </p>
+                                
+                                <div class="row justify-content-center mb-4">
+                                    <div class="col-md-6">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Submission Details</h6>
+                                                <ul class="list-unstyled small">
+                                                    <li class="mb-2"><strong>Confirmation #:</strong> TX-2023-5A8B2C</li>
+                                                    <li class="mb-2"><strong>Submission Date:</strong> <span id="submissionDate"></span></li>
+                                                    <li class="mb-2"><strong>Estimated Processing:</strong> 7-10 business days</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-center gap-3">
+                                    <button class="btn btn-primary" id="newReturnBtn">
+                                        <i class="fas fa-plus me-2"></i> Start Another Return
+                                    </button>
+                                    <button class="btn btn-outline-primary" id="viewDashboardBtn">
+                                        <i class="fas fa-tachometer-alt me-2"></i> Return to Dashboard
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-0">
+                                © 2025 Theo Masoko. Proprietary prototype developed for Mmoloki Modise (Botho University SFT1512797). 
+                                Unauthorized commercial use prohibited. Academic use only.
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <p class="mb-0">
+                                <span class="me-3"><i class="fas fa-lock"></i> Secure Connection</span>
+                                <span><i class="fas fa-shield-alt"></i> Research Prototype</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Correct password (in a real app, this would be server-side validation)
+            const CORRECT_PASSWORD = "password123";
+            
+            // DOM elements
+            const loginPage = document.getElementById('loginPage');
+            const dashboardPage = document.getElementById('dashboardPage');
+            const loginForm = document.getElementById('loginForm');
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('togglePassword');
+            const loginError = document.getElementById('loginError');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            // Dashboard elements
+            const startReturnBtn = document.getElementById('startReturnBtn');
+            const returnFormSection = document.getElementById('returnFormSection');
+            const uploadSection = document.getElementById('uploadSection');
+            const confirmationSection = document.getElementById('confirmationSection');
+            const nextToUploadBtn = document.getElementById('nextToUploadBtn');
+            const backToFormBtn = document.getElementById('backToFormBtn');
+            const cancelReturnBtn = document.getElementById('cancelReturnBtn');
+            const taxReturnForm = document.getElementById('taxReturnForm');
+            const uploadForm = document.getElementById('uploadForm');
+            const newReturnBtn = document.getElementById('newReturnBtn');
+            const viewDashboardBtn = document.getElementById('viewDashboardBtn');
+            
+            // File upload elements
+            const taxDocsUploadBox = document.getElementById('taxDocsUploadBox');
+            const supportDocsUploadBox = document.getElementById('supportDocsUploadBox');
+            const taxDocsInput = document.getElementById('taxDocs');
+            const supportDocsInput = document.getElementById('supportDocs');
+            
+            // Toggle password visibility
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
+            });
+            
+            // Login form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                loginError.textContent = '';
+                
+                if (passwordInput.value === CORRECT_PASSWORD) {
+                    // Successful login
+                    loginPage.style.display = 'none';
+                    dashboardPage.style.display = 'block';
+                } else {
+                    // Failed login
+                    loginError.textContent = 'Incorrect password. Please try again.';
+                    passwordInput.focus();
+                }
+            });
+            
+            // Logout button
+            logoutBtn.addEventListener('click', function() {
+                // Return to login page
+                loginPage.style.display = 'block';
+                dashboardPage.style.display = 'none';
+                passwordInput.value = '';
+                resetReturnForm();
+            });
+            
+            // Dashboard Flow
+            startReturnBtn.addEventListener('click', function() {
+                startReturnBtn.disabled = true;
+                showSection(returnFormSection);
+            });
+            
+            nextToUploadBtn.addEventListener('click', function() {
+                if (taxReturnForm.checkValidity()) {
+                    showSection(uploadSection);
+                } else {
+                    taxReturnForm.reportValidity();
+                }
+            });
+            
+            backToFormBtn.addEventListener('click', function() {
+                showSection(returnFormSection);
+            });
+            
+            cancelReturnBtn.addEventListener('click', function() {
+                resetReturnForm();
+            });
+            
+            uploadForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate required file is uploaded
+                if (!taxDocsInput.files || taxDocsInput.files.length === 0) {
+                    alert('Please upload at least your tax documents (W-2/1099)');
+                    return;
+                }
+                
+                // Set submission date
+                const now = new Date();
+                document.getElementById('submissionDate').textContent = now.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                showSection(confirmationSection);
+            });
+            
+            newReturnBtn.addEventListener('click', function() {
+                resetReturnForm();
+            });
+            
+            viewDashboardBtn.addEventListener('click', function() {
+                resetReturnForm();
+            });
+            
+            // File upload handlers
+            taxDocsUploadBox.addEventListener('click', function() {
+                taxDocsInput.click();
+            });
+            
+            supportDocsUploadBox.addEventListener('click', function() {
+                supportDocsInput.click();
+            });
+            
+            taxDocsInput.addEventListener('change', function() {
+                updateFileUploadBox(taxDocsUploadBox, taxDocsInput);
+            });
+            
+            supportDocsInput.addEventListener('change', function() {
+                updateFileUploadBox(supportDocsUploadBox, supportDocsInput);
+            });
+            
+            // Helper functions
+            function showSection(sectionToShow) {
+                document.querySelectorAll('.form-section').forEach(section => {
+                    section.classList.remove('active-section');
+                });
+                sectionToShow.classList.add('active-section');
+                
+                // Scroll to top of section
+                sectionToShow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            function resetReturnForm() {
+                // Reset forms
+                taxReturnForm.reset();
+                uploadForm.reset();
+                
+                // Reset file upload boxes
+                taxDocsUploadBox.innerHTML = `
+                    <i class="fas fa-file-pdf"></i>
+                    <h5>W-2, 1099, or other tax forms</h5>
+                    <p class="text-muted">Click to browse or drag and drop PDF files</p>
+                    <input type="file" class="d-none" id="taxDocs" accept=".pdf" required>
+                `;
+                
+                supportDocsUploadBox.innerHTML = `
+                    <i class="fas fa-file-archive"></i>
+                    <h5>Receipts, statements, or other evidence</h5>
+                    <p class="text-muted">Click to browse or drag and drop multiple files</p>
+                    <input type="file" class="d-none" id="supportDocs" multiple>
+                `;
+                
+                // Re-attach event listeners
+                taxDocsInput.addEventListener('change', function() {
+                    updateFileUploadBox(taxDocsUploadBox, taxDocsInput);
+                });
+                
+                supportDocsInput.addEventListener('change', function() {
+                    updateFileUploadBox(supportDocsUploadBox, supportDocsInput);
+                });
+                
+                // Hide all sections
+                document.querySelectorAll('.form-section').forEach(section => {
+                    section.classList.remove('active-section');
+                });
+                
+                // Enable start button
+                startReturnBtn.disabled = false;
+            }
+            
+            function updateFileUploadBox(boxElement, inputElement) {
+                const files = inputElement.files;
+                if (files.length > 0) {
+                    let fileNames = '';
+                    if (files.length === 1) {
+                        fileNames = files[0].name;
+                    } else {
+                        fileNames = `${files.length} files selected`;
+                    }
+                    
+                    boxElement.innerHTML = `
+                        <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                        <h5>${fileNames}</h5>
+                        <p class="text-muted small">${formatFileSize(getTotalFileSize(files))}</p>
+                        ${boxElement.innerHTML}
+                    `;
+                }
+            }
+            
+            function getTotalFileSize(files) {
+                let totalSize = 0;
+                for (let i = 0; i < files.length; i++) {
+                    totalSize += files[i].size;
+                }
+                return totalSize;
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i]);
+            }
+        });
+    </script>
+</body>
+
+
+<!-- 
+=======================================================================
+PROTOTYPE: E-Services Security Enhancement
+DEVELOPER: Theo Masoko
+CLIENT: Mmoloki Modise (Botho University - Network Security BSc)
+STUDENT NO: SFT1512797
+PURPOSE: Academic research prototype - "Using Cybercrime Investigation Methods 
+         and Two-Factor Authentication to Strengthen E-Services Platform Security"
+COPYRIGHT: © 2025 Theo Masoko. All rights reserved.
+NOTES: This is a non-production prototype for academic demonstration only
+=======================================================================
+-->
+
+
+</html>

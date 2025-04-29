@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- 
+=======================================================================
+PROTOTYPE: E-Services Security Enhancement
+DEVELOPER: Theo Masoko
+CLIENT: Mmoloki Modise (Botho University - Network Security BSc)
+STUDENT NO: SFT1512797
+PURPOSE: Academic research prototype - "Using Cybercrime Investigation Methods 
+         and Two-Factor Authentication to Strengthen E-Services Platform Security"
+COPYRIGHT: © 2025 Theo Masoko. All rights reserved.
+NOTES: This is a non-production prototype for academic demonstration only
+=======================================================================
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure E-Services Platform</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+        }
+        
+        .auth-container {
+            max-width: 500px;
+            margin: 80px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        .dashboard-container {
+            display: none;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: white;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        .form-section {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+        
+        .active-section {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-message {
+            color: var(--danger-color);
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .success-message {
+            color: var(--success-color);
+            margin-top: 10px;
+        }
+        
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            background-color: var(--light-color);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .security-badge i {
+            margin-right: 5px;
+            color: var(--success-color);
+        }
+        
+        .captcha-container {
+            background: var(--light-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .encryption-notice {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+        
+        .file-upload-box {
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-box:hover {
+            border-color: var(--secondary-color);
+            background: rgba(52, 152, 219, 0.05);
+        }
+        
+        .file-upload-box i {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        
+        .progress {
+            height: 8px;
+            margin-top: 10px;
+        }
+        
+        .sidebar {
+            background: var(--primary-color);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding-top: 20px;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 5px;
+            border-radius: 5px;
+            padding: 10px 15px;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            font-weight: 600;
+        }
+        
+        .welcome-card {
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+            color: white;
+        }
+        
+        .welcome-card .card-body {
+            padding: 30px;
+        }
+        
+        .welcome-card h3 {
+            font-weight: 600;
+        }
+        
+        .welcome-card p {
+            opacity: 0.9;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        .stat-card .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            background: white;
+            padding: 20px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="container auth-container" id="loginPage">
+       
+
+        <div class="text-center mb-4">
+            <a href="unsercure-index.html" >
+                <img src="images/logo.png" alt="Secure E-Services Logo" class="mb-3" style="cursor: pointer;">
+            </a>
+            <p class="text-muted">Secure platform for government services</p>
+        </div>
+        
+        <div class="security-badge">
+            <i class="fas fa-lock"></i>
+            <span>Secure Login Portal</span>
+        </div>
+        
+        <form id="loginForm">
+            <!-- CAPTCHA Section -->
+            <div class="form-section active-section" id="captchaSection">
+                <h5 class="mb-3">Security Verification</h5>
+                <p class="text-muted small mb-4">Please verify you're not a robot</p>
+                
+                <div class="captcha-container text-center">
+                    <div class="mb-3">
+                        <img src="images/captcha.png" alt="CAPTCHA" class="img-fluid mb-2">
+                        <a href="#" class="text-primary small"><i class="fas fa-sync-alt"></i> Refresh CAPTCHA</a>
+                    </div>
+                    <div class="mb-3">
+                        <label for="captcha" class="form-label">Enter CAPTCHA text</label>
+                        <input type="text" class="form-control" id="captcha" required>
+                    </div>
+                    <button type="button" class="btn btn-primary w-100" id="verifyCaptchaBtn">Verify</button>
+                    <div id="captchaError" class="error-message text-center mt-2"></div>
+                </div>
+            </div>
+            
+            <!-- Password Section -->
+            <div class="form-section" id="passwordSection">
+
+                <div class="mb">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" placeholder="Enter username" />
+                  </div>
+
+
+                <h5 class="mb-3">Enter Your Password</h5>
+                <p class="text-muted small mb-4">Please enter your secure password</p>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" required>
+                    <div class="encryption-notice">
+                        <i class="fas fa-lock"></i> Your password is encrypted during transmission
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary w-100" id="submitPasswordBtn">Continue</button>
+                <div id="passwordError" class="error-message text-center mt-2"></div>
+            </div>
+            
+            <!-- 2FA Section -->
+            <div class="form-section" id="twoFactorSection">
+                <h5 class="mb-3">Two-Factor Authentication</h5>
+                <p class="text-muted small mb-4">Enter the 6-digit code from your authenticator app</p>
+                
+                <div class="mb-3">
+                    <label for="twoFactorCode" class="form-label">Verification Code</label>
+                    <input type="text" class="form-control" id="twoFactorCode" maxlength="6" required>
+                    <div class="encryption-notice">
+                        <i class="fas fa-shield-alt"></i> For your security, we require two-factor authentication
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary w-100" id="submit2FABtn">Verify & Login</button>
+                <div id="twoFactorError" class="error-message text-center mt-2"></div>
+            </div>
+        </form>
+        
+        <div class="text-center mt-4">
+            <p class="small text-muted">
+                <i class="fas fa-info-circle"></i> Having trouble? <a href="#" class="text-primary">Contact support</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div class="dashboard-container" id="dashboardPage">
+        <!-- Sidebar -->
+        <div class="sidebar col-md-3 col-lg-2 d-md-block">
+            <div class="text-center mb-4">
+                <img src="images/logo.png" alt="Logo" class="rounded-circle mb-2" style="width: 60px;">
+                <h5 class="text-white">Secure E-Services</h5>
+                <p class="small text-white-50">Government Platform</p>
+            </div>
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-file-alt"></i> My Returns
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-user-shield"></i> Security
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+                <h1 class="h2">Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Help</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card welcome-card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h3>Welcome back, John Doe</h3>
+                                    <p>You have 1 pending action item. Your last login was today at 10:30 AM from IP 192.168.1.1</p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <i class="fas fa-shield-alt" style="font-size: 4rem; opacity: 0.3;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Completed Returns</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <div class="stat-value">1</div>
+                            <div class="stat-label">Pending Actions</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <div class="stat-value">100%</div>
+                            <div class="stat-label">Security Score</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Card -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-success btn-lg" id="startReturnBtn">
+                                    <i class="fas fa-file-import"></i> Start New Secure Return
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form Sections -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <!-- Return Form Section -->
+                    <div class="form-section card" id="returnFormSection">
+                        <div class="card-header">
+                            <h5 class="mb-0">Secure Tax Return Form</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="taxReturnForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="income" class="form-label">Annual Income</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" id="income" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="deductions" class="form-label">Deductions</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" id="deductions" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="taxYear" class="form-label">Tax Year</label>
+                                        <select class="form-select" id="taxYear" required>
+                                            <option value="">Select Year</option>
+                                            <option value="2023">2023</option>
+                                            <option value="2022">2022</option>
+                                            <option value="2021">2021</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="filingStatus" class="form-label">Filing Status</label>
+                                        <select class="form-select" id="filingStatus" required>
+                                            <option value="">Select Status</option>
+                                            <option value="single">Single</option>
+                                            <option value="married">Married Filing Jointly</option>
+                                            <option value="separate">Married Filing Separately</option>
+                                            <option value="head">Head of Household</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary" id="cancelReturnBtn">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="nextToUploadBtn">
+                                        Next: Upload Documents <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Section -->
+                    <div class="form-section card" id="uploadSection">
+                        <div class="card-header">
+                            <h5 class="mb-0">Secure Document Upload</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="uploadForm">
+                                <div class="security-badge">
+                                    <i class="fas fa-lock"></i>
+                                    <span>All documents are encrypted during transfer and storage</span>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Required Documents</label>
+                                    <div class="file-upload-box" id="w2UploadBox">
+                                        <i class="fas fa-file-pdf"></i>
+                                        <h5>W-2 Form</h5>
+                                        <p class="text-muted">Click to browse or drag and drop</p>
+                                        <input type="file" class="d-none" id="w2Form" required>
+                                        <div class="progress d-none" id="w2Progress">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Additional Documents (Optional)</label>
+                                    <div class="file-upload-box" id="otherDocsUploadBox">
+                                        <i class="fas fa-file-archive"></i>
+                                        <h5>Supporting Documents</h5>
+                                        <p class="text-muted">Click to browse or drag and drop multiple files</p>
+                                        <input type="file" class="d-none" id="otherDocs" multiple>
+                                        <div class="progress d-none" id="otherDocsProgress">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary" id="backToFormBtn">
+                                        <i class="fas fa-arrow-left"></i> Back to Form
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-lock"></i> Submit Securely
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Confirmation Section -->
+                    <div class="form-section card" id="confirmationSection">
+                        <div class="card-header">
+                            <h5 class="mb-0">Submission Complete</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="mb-4">
+                                <i class="fas fa-check-circle" style="font-size: 5rem; color: var(--success-color);"></i>
+                            </div>
+                            <h3 class="mb-3">Secure Submission Confirmed</h3>
+                            <p class="text-muted mb-4">
+                                Your tax return has been securely transmitted and encrypted for storage.<br>
+                                You will receive a confirmation email with your submission details.
+                            </p>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6 mx-auto">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Submission Details</h6>
+                                            <ul class="list-unstyled">
+                                                <li><strong>Submission ID:</strong> SEC-2023-5A8B2C</li>
+                                                <li><strong>Date:</strong> <span id="submissionDate"></span></li>
+                                                <li><strong>Time:</strong> <span id="submissionTime"></span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary" id="newReturnBtn">
+                                <i class="fas fa-plus"></i> Start New Return
+                            </button>
+                            <button class="btn btn-outline-primary" id="viewDashboardBtn">
+                                <i class="fas fa-tachometer-alt"></i> Return to Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-0">
+                                © 2025 Theo Masoko. Proprietary prototype developed for Mmoloki Modise (Botho University SFT1512797). 
+                                Unauthorized commercial use prohibited. Academic use only.
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <p class="mb-0">
+                                <span class="me-3"><i class="fas fa-lock"></i> Secure Connection</span>
+                                <span><i class="fas fa-shield-alt"></i> Research Prototype</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Correct credentials (in a real app, this would be server-side validation)
+            const CORRECT_PASSWORD = "SecurePass123!";
+            const CORRECT_CAPTCHA = "ABC123";
+            const CORRECT_2FA_CODE = "654321";
+            
+            // DOM elements
+            const loginPage = document.getElementById('loginPage');
+            const dashboardPage = document.getElementById('dashboardPage');
+            
+            // Login form elements
+            const captchaSection = document.getElementById('captchaSection');
+            const passwordSection = document.getElementById('passwordSection');
+            const twoFactorSection = document.getElementById('twoFactorSection');
+            const verifyCaptchaBtn = document.getElementById('verifyCaptchaBtn');
+            const submitPasswordBtn = document.getElementById('submitPasswordBtn');
+            const submit2FABtn = document.getElementById('submit2FABtn');
+            const captchaInput = document.getElementById('captcha');
+            const passwordInput = document.getElementById('password');
+            const twoFactorInput = document.getElementById('twoFactorCode');
+            const captchaError = document.getElementById('captchaError');
+            const passwordError = document.getElementById('passwordError');
+            const twoFactorError = document.getElementById('twoFactorError');
+            
+            // Dashboard elements
+            const startReturnBtn = document.getElementById('startReturnBtn');
+            const returnFormSection = document.getElementById('returnFormSection');
+            const uploadSection = document.getElementById('uploadSection');
+            const confirmationSection = document.getElementById('confirmationSection');
+            const nextToUploadBtn = document.getElementById('nextToUploadBtn');
+            const backToFormBtn = document.getElementById('backToFormBtn');
+            const cancelReturnBtn = document.getElementById('cancelReturnBtn');
+            const taxReturnForm = document.getElementById('taxReturnForm');
+            const uploadForm = document.getElementById('uploadForm');
+            const newReturnBtn = document.getElementById('newReturnBtn');
+            const viewDashboardBtn = document.getElementById('viewDashboardBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            // File upload elements
+            const w2UploadBox = document.getElementById('w2UploadBox');
+            const otherDocsUploadBox = document.getElementById('otherDocsUploadBox');
+            const w2FormInput = document.getElementById('w2Form');
+            const otherDocsInput = document.getElementById('otherDocs');
+            const w2Progress = document.getElementById('w2Progress');
+            const otherDocsProgress = document.getElementById('otherDocsProgress');
+            
+            // Login Flow
+            verifyCaptchaBtn.addEventListener('click', function() {
+                if (captchaInput.value === CORRECT_CAPTCHA) {
+                    showSection(passwordSection);
+                    captchaError.textContent = '';
+                } else {
+                    captchaError.textContent = 'CAPTCHA verification failed. Please try again.';
+                    captchaInput.focus();
+                }
+            });
+            
+            submitPasswordBtn.addEventListener('click', function() {
+                if (passwordInput.value === CORRECT_PASSWORD) {
+                    showSection(twoFactorSection);
+                    passwordError.textContent = '';
+                    twoFactorInput.focus();
+                } else {
+                    passwordError.textContent = 'Incorrect password. Please try again.';
+                    passwordInput.focus();
+                }
+            });
+            
+            submit2FABtn.addEventListener('click', function() {
+                if (twoFactorInput.value === CORRECT_2FA_CODE) {
+                    // Successful login
+                    loginPage.style.display = 'none';
+                    dashboardPage.style.display = 'block';
+                    
+                    // Reset login form
+                    captchaInput.value = '';
+                    passwordInput.value = '';
+                    twoFactorInput.value = '';
+                    showSection(captchaSection);
+                } else {
+                    twoFactorError.textContent = 'Invalid verification code. Please try again.';
+                    twoFactorInput.focus();
+                }
+            });
+            
+            // Dashboard Flow
+            startReturnBtn.addEventListener('click', function() {
+                startReturnBtn.disabled = true;
+                showSection(returnFormSection);
+            });
+            
+            nextToUploadBtn.addEventListener('click', function() {
+                if (taxReturnForm.checkValidity()) {
+                    showSection(uploadSection);
+                } else {
+                    taxReturnForm.reportValidity();
+                }
+            });
+            
+            backToFormBtn.addEventListener('click', function() {
+                showSection(returnFormSection);
+            });
+            
+            cancelReturnBtn.addEventListener('click', function() {
+                resetReturnForm();
+            });
+            
+            uploadForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Simulate file upload with progress
+                simulateFileUpload(w2FormInput, w2Progress);
+                simulateFileUpload(otherDocsInput, otherDocsProgress);
+                
+                // After upload completes
+                setTimeout(function() {
+                    // Set submission date/time
+                    const now = new Date();
+                    document.getElementById('submissionDate').textContent = now.toLocaleDateString();
+                    document.getElementById('submissionTime').textContent = now.toLocaleTimeString();
+                    
+                    showSection(confirmationSection);
+                }, 2000);
+            });
+            
+            newReturnBtn.addEventListener('click', function() {
+                resetReturnForm();
+            });
+            
+            viewDashboardBtn.addEventListener('click', function() {
+                resetReturnForm();
+            });
+            
+            logoutBtn.addEventListener('click', function() {
+                // Return to login page
+                loginPage.style.display = 'block';
+                dashboardPage.style.display = 'none';
+                resetReturnForm();
+            });
+            
+            // File upload handlers
+            w2UploadBox.addEventListener('click', function() {
+                w2FormInput.click();
+            });
+            
+            otherDocsUploadBox.addEventListener('click', function() {
+                otherDocsInput.click();
+            });
+            
+            w2FormInput.addEventListener('change', function() {
+                updateFileUploadBox(w2UploadBox, w2FormInput);
+            });
+            
+            otherDocsInput.addEventListener('change', function() {
+                updateFileUploadBox(otherDocsUploadBox, otherDocsInput);
+            });
+            
+            // Helper functions
+            function showSection(sectionToShow) {
+                document.querySelectorAll('.form-section').forEach(section => {
+                    section.classList.remove('active-section');
+                });
+                sectionToShow.classList.add('active-section');
+                
+                // Scroll to top of section
+                sectionToShow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            function resetReturnForm() {
+                // Reset forms
+                taxReturnForm.reset();
+                uploadForm.reset();
+                
+                // Reset file upload boxes
+                w2UploadBox.innerHTML = `
+                    <i class="fas fa-file-pdf"></i>
+                    <h5>W-2 Form</h5>
+                    <p class="text-muted">Click to browse or drag and drop</p>
+                    <input type="file" class="d-none" id="w2Form" required>
+                    <div class="progress d-none" id="w2Progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                    </div>
+                `;
+                
+                otherDocsUploadBox.innerHTML = `
+                    <i class="fas fa-file-archive"></i>
+                    <h5>Supporting Documents</h5>
+                    <p class="text-muted">Click to browse or drag and drop multiple files</p>
+                    <input type="file" class="d-none" id="otherDocs" multiple>
+                    <div class="progress d-none" id="otherDocsProgress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                    </div>
+                `;
+                
+                // Hide all sections
+                document.querySelectorAll('.form-section').forEach(section => {
+                    section.classList.remove('active-section');
+                });
+                
+                // Enable start button
+                startReturnBtn.disabled = false;
+            }
+            
+            function updateFileUploadBox(boxElement, inputElement) {
+                const files = inputElement.files;
+                if (files.length > 0) {
+                    let fileNames = '';
+                    if (files.length === 1) {
+                        fileNames = files[0].name;
+                    } else {
+                        fileNames = `${files.length} files selected`;
+                    }
+                    
+                    boxElement.innerHTML = `
+                        <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                        <h5>${fileNames}</h5>
+                        <p class="text-muted small">${formatFileSize(getTotalFileSize(files))}</p>
+                        ${boxElement.innerHTML}
+                    `;
+                }
+            }
+            
+            function getTotalFileSize(files) {
+                let totalSize = 0;
+                for (let i = 0; i < files.length; i++) {
+                    totalSize += files[i].size;
+                }
+                return totalSize;
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i]);
+            }
+            
+            function simulateFileUpload(inputElement, progressElement) {
+                if (inputElement.files.length > 0) {
+                    const progressBar = progressElement.querySelector('.progress-bar');
+                    progressElement.classList.remove('d-none');
+                    
+                    let progress = 0;
+                    const interval = setInterval(function() {
+                        progress += 10;
+                        progressBar.style.width = progress + '%';
+                        
+                        if (progress >= 100) {
+                            clearInterval(interval);
+                            setTimeout(function() {
+                                progressElement.classList.add('d-none');
+                                progressBar.style.width = '0%';
+                            }, 500);
+                        }
+                    }, 100);
+                }
+            }
+        });
+    </script>
+</body>
+
+
+
+<!-- 
+=======================================================================
+PROTOTYPE: E-Services Security Enhancement
+DEVELOPER: Theo Masoko
+CLIENT: Mmoloki Modise (Botho University - Network Security BSc)
+STUDENT NO: SFT1512797
+PURPOSE: Academic research prototype - "Using Cybercrime Investigation Methods 
+         and Two-Factor Authentication to Strengthen E-Services Platform Security"
+COPYRIGHT: © 2025 Theo Masoko. All rights reserved.
+NOTES: This is a non-production prototype for academic demonstration only
+=======================================================================
+-->
+
+
+</html>
